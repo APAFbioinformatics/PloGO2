@@ -318,10 +318,10 @@ output from each step. The first step in this mode is to process the list of ann
 
 Similar to the processGoFile, an individual pathway annotation file can be processed using
 function processPathFile and the identifiers belonging to each pathway category will be
-extracted. The following code fragment shows how to process the annotation for the ``Alldata"
+extracted. The following code fragment shows how to process the annotation for the ``AllData"
 file given a list of pathway categories of interest. 
 <<processPathFile, eval=FALSE>>=
-fname <- paste(dir,"PWFiles/Alldata.txt", sep="/")
+fname <- paste(dir,"PWFiles/AllData.txt", sep="/")
 AnnotIDlist <- c("osa01100","osa01110","osa01230","osa00300","osa00860")	
 processPathFile(fname, AnnotIDlist)
 @
@@ -363,7 +363,7 @@ is as below.
 <<plopathway, results=hide>>=
 path <- system.file("files", package = "PloGO2")
 res <- PloPathway( zipFile=paste(path, "PWFiles.zip", sep="/"), 
-	reference="Alldata", 
+	reference="AllData", 
 	data.file.name = paste(path, "Abundance_data.csv", sep="/"),
 	datafile.ignore.cols = 1)
 @

@@ -67,7 +67,7 @@ J. Wu
 
 # use one of the stored files
 dir <- system.file("files", package="PloGO2")
-fname <- paste(dir,"PWFiles/Alldata.txt", sep="/")
+fname <- paste(dir,"PWFiles/AllData.txt", sep="/")
 datafile <- paste(dir, "Abundance_data.csv", sep="/")
 AnnotIDlist <- unique(unlist(sapply(read.delim(fname, stringsAsFactors=FALSE)[,2], function(x) strsplit(x, split=" ")[[1]])))
 

@@ -81,7 +81,7 @@ image(ab.mat)
 
 # KEGG pathway
 path <- system.file("files", package="PloGO2")
-file.names <- file.path(path,"PWFiles", c("Alldata.txt","black.txt","blue.txt","brown.txt","green.txt",
+file.names <- file.path(path,"PWFiles", c("AllData.txt","black.txt","blue.txt","brown.txt","green.txt",
 	"red.txt","turquoise.txt") )
 datafile <- file.path(path,"Abundance_data.csv")
 Group <- names(read.csv(datafile))[-1]
