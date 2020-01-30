@@ -1,0 +1,48 @@
+AllGOTerms
+cytoplasm
+nucleus
+extracellular space
+plasma membrane
+cell surface
+chromosome
+cytoskeleton
+cytosol
+endosome
+endoplasmic reticulum
+Golgi apparatus
+mitochondrion
+protein complex
+ribosome
+cell communication
+cell death
+cell differentiation
+cell division
+cell growth
+cellular homeostasis
+cell motility
+cellular component organization
+cell proliferation
+coagulation
+conjugation
+defense response
+developmental process
+metabolic process
+regulation of biological process
+reproduction
+response to stimulus
+transport
+antioxidant activity
+catalytic activity
+DNA binding
+enzyme regulator activity
+metal ion binding
+motor activity
+nucleotide binding
+protein binding
+receptor activity
+RNA binding
+signal transducer activity
+structural molecule activity
+transcription regulator activity
+translation regulator activity
+transporter activity

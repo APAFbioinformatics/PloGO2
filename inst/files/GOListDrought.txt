@@ -1,0 +1,18 @@
+"response to stimulus"
+"transport"
+"protein folding"
+"protein metabolic process"
+"carbohydrate metabolic process"
+"oxidation reduction"
+"photosynthesis"
+"lipid metabolic process"
+"cell redox homeostasis"
+"cellular amino acid and derivative metabolic process"
+"nucleobase, nucleoside and nucleotide metabolic process"
+"vitamin metabolic process"
+"generation of precursor metabolites and energy"
+"metabolic process"
+"cell communication"
+"signaling"
+
+

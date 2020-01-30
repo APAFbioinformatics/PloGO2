@@ -1,0 +1,9 @@
+exportPattern("^[[:alpha:]]+")
+importFrom(GO.db,GOTERM)
+importFrom(GOstats,GOGraph)
+importFrom(lattice,barchart)
+importFrom(lattice,levelplot)
+import(openxlsx)
+importFrom(httr,GET)
+importFrom(httr,content)
+

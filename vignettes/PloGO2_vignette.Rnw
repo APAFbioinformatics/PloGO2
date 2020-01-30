@@ -1,0 +1,399 @@
+\documentclass[11pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+\usepackage{times}
+\usepackage{comment}
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+%\headheight=-.3in
+%\VignetteIndexEntry{UsingPloGO}
+%\VignetteDepends{xtable}
+
+\bibliographystyle{plainnat}
+
+\title{PloGO2: An R package for plotting GO or Pathway annotation and abundance}
+\author{J.Wu and D.Pascovici}
+
+\begin{document}
+
+\maketitle
+\begin{abstract}
+This R package is an upgrade of the PloGO package described in \cite{pascovici2012plogo},
+ and contains tools for plotting gene ontology or KEGG pathway information for multiple data subsets at the same time.  
+It is designed to  incorporate additive information about data abundance (if available) in addition to the gene ontology and pathway annotation, 
+handle multiple input files corresponding to multiple data subsets of interest, and allow for a small selection of gene ontology 
+categories of interest.  It allows to potentially compare all subsets to a baseline condition, typically the set of all proteins
+identified in an experiment, to determine enrichment.  
+The package includes samples of the publicly available data of \cite{Mirzaei} and \cite{YunqiWu2016}.
+\end{abstract}
+
+
+
+\section{Introduction}
+
+Both GO (Gene Ontology) and KEGG pathway data summaries are routinely used by proteomic publications 
+to provide  some first-glance insight into the function,  process, location, interaction and relation of collections 
+of genes or proteins.  The GO data is organized as a directed acyclic graph starting from one
+ parent node, which means that particular ontology categories can have multiple parents as well 
+ as multiple children. The KEGG pathway data, on the other hand, is simply orgnaised into
+seven big categories including metabolism, generic information processing and so on. 
+ 
+This package was designed for the following tasks
+\begin{itemize}
+\item Generate GO or KEGG summaries in text or excel format for a large number of data subsets 
+\item Allow for selection of particular categories of interest for an experiment (e.g. stress response) across many annotation files, instead of working with a particular level of the GO hierarchy.
+\item Summarise aditive protein abundance information (such as percentages of total abundance, or log fold changes) for all data sets and all categories of interest, if available
+\item Determine enrichment by comparing all sets to one of the selected sets, typically all proteins identified in the experiment
+\end{itemize}
+
+
+\section{Package use}
+
+First load up PloGO2; we are also loading up the xtable packages so we can display some tables nicely in this document.  
+
+<<library>>=
+library(PloGO2)
+library(xtable)
+@
+
+Fig \ref{fig:plogo2} shows the high level PloGO2 workflow usage. The workflow contains two parts:
+Gene Ontology analysis and pathway analysis. 
+\begin{center}
+\begin{figure}[h!]
+\includegraphics{plogo2}
+\caption{PloGO2 workflow usage}
+\label{fig:plogo2}
+\end{figure}
+\end{center}
+
+
+
+\section{Gene Ontology analysis}
+
+\subsection{Generate some gene ontology files from scratch}
+\label{sec:gofiles}
+The starting point of a gene ontology analysis is always a collection of identifiers with all their available gene ontology annotation.  
+At this point, only Ensembl human or Uniprot identifiers are accepted, though this can be easily extended.  
+The GO annotation is obtained from biomaRt or directly from the Uniprot website. 
+
+The code fragment below generates a very small such file in the local folder where R is running from.  Keep in mind that this will require online accesing of the Ensembl biomart repository and as such can take a while (or can fail if the repository is not available for whatever reason).
+
+<<genFile, eval=TRUE, echo=TRUE>>=
+v <- c("Q9HWC9","Q9HWD0","Q9I4N8","Q9HW18","Q9HWC9","Q9HWD0")
+genWegoFile(v, fname = "F1.txt")
+@
+
+
+Now a quick look at the files generated: the format is very simple, with the identifier in the first column followed by space separated GO identifiers.
+
+
+<<results=tex, eval=TRUE, echo=TRUE>>=
+print(xtable(read.annot.file("F1.txt"), align = "rp{4cm}p{10cm}"))
+@
+
+
+Alternatively, one can obtain some gene ontology files in "long" format, namely identifier followed by GO annotation separated by white space (spaces or tabs).  
+One online program that generates such files is GORetriever (part of the \cite{AgBase} set of tools); 
+other options for obtaining similar output are a direct download of ID and GO information only from places such as Biomart or Uniprot.  
+Only the first two columns of the files will be processed, the rest (if any) will be discarded.  
+Two such sample files, one from GoRetriever and another a Biomart download are included in the package, and we show the first few lines below.  
+
+<<results=tex, eval=TRUE, echo=TRUE>>=
+path <- system.file("files", package = "PloGO2")
+goRet <- file.path(path, "goRetOutput.txt")
+print(xtable(read.annot.file(goRet)[1:10, ]))
+bioMt <- file.path(path, "mart_export.txt")
+print(xtable(read.annot.file(bioMt, format="long")[1:10, ]))
+@
+
+
+\subsection{Process existing gene ontology files}
+
+From now on we assume we have several gene ontology files, whether generated with PloGO2 or obtained elsewhere. 
+For a realistic example, there are 5 sample gene ontology files included in the package; 
+they are a subset of all those analyzed for the paper by \cite{Mirzaei} and correspond to various presence-absence categories in which the total number of proteins were partitioned.  The same package also contains a protein abundance file which has protein abundance values for each identifier, as well as protein names.
+
+<<genFile,eval=TRUE, echo=TRUE>>=
+file.names <- file.path(path, c("00100.txt", "01111.txt", "10000.txt", 
+	"11111.txt", "Control.txt"))
+datafile <- file.path(path, "NSAFDesc.csv")
+@
+
+<<echo=false>>=
+options(width = 60)
+@
+
+As a next step we could either look at a few categories of interest, or extract all categories at a particular level of the gene ontology graph.  
+
+The following code fragment would extract all nodes at the Level 2 (3 or 4) of the GO hierarchy:
+
+<<GoLev3, eval=TRUE, echo=TRUE>>=
+GOIDlist <- GOTermList("BP", level = 2)
+@
+
+
+While perhaps restrictive, the list at level 2 could be quite informative; at levels 3 or 4 it is very long. By some manual input or processing you can choose to enter for instance a GO slim of interest; for instance below we selected the cellular component part of the generic GO slim developed by the GO consortium.
+<<GoSlim>>=
+GOSlimCC <- c( "GO:0000228", "GO:0000229", "GO:0005575", "GO:0005576", 
+	"GO:0005578", "GO:0005615", "GO:0005618", "GO:0005622", "GO:0005623", 
+	"GO:0005634", "GO:0005635", "GO:0005654", "GO:0005694", "GO:0005730", 
+	"GO:0005737", "GO:0005739", "GO:0005764", "GO:0005768", "GO:0005773", 
+	"GO:0005777", "GO:0005783", "GO:0005794", "GO:0005811", "GO:0005815", 
+	"GO:0005829", "GO:0005840", "GO:0005856", "GO:0005886", "GO:0005929", 
+	"GO:0009536", "GO:0009579", "GO:0016023", "GO:0030312", "GO:0043226", 
+	"GO:0043234" )
+@
+
+ For the purpose of this analysis, a more targeted fixed list of categories of interest was preferred by \cite{Mirzaei}, as below.
+
+
+<<GoIDlist, eval=TRUE, echo=TRUE>>=
+# Extract a few categories of interest
+termList <- c("response to stimulus", "transport", "protein folding",
+	"protein metabolic process", "carbohydrate metabolic process",
+	"oxidation reduction", "photosynthesis", "lipid metabolic process",
+	"cell redox homeostasis", 
+	"cellular amino acid and derivative metabolic process", 
+	"nucleobase, nucleoside and nucleotide metabolic process", 
+	"vitamin metabolic process", "generation of precursor metabolites and energy", 
+	"metabolic process", "signaling")
+GOIDmap <- getGoID(termList)
+GOIDlist <- names(GOIDmap)
+@
+
+
+Once you have the files and the GO categories, you need to process the files one by one to extract summaries of the categories of interest. The file by file processing is done by the processGoFile function.
+
+<<processFile, eval=FALSE>>=
+processGoFile("F1.txt", GOIDlist)
+@
+
+The bulk of processing a set of annotation files is done by the processAnnotation file, which can print annotation listings for each file, and merge with abundance information if any is available.
+
+<<processFiles,eval=TRUE, echo=TRUE>>=
+res.list <- processAnnotation(file.names, GOIDlist, printFiles = TRUE)
+@
+
+After processing the files, the annotationPlot function produces some visual summaries and generates the counts and percentages.
+<<printAnnot,eval=TRUE, echo=TRUE>>=
+annot.res <- annotationPlot(res.list)
+@
+
+Below are the summaries generated for the protein annotation files considered.
+
+<<results=tex,eval=TRUE, echo=TRUE>>=
+print(xtable(annot.res$counts, align = "rp{1.2cm}p{1.2cm}p{1.2cm}p{1.2cm}p{1.2cm}"))
+print(xtable(annot.res$percentages, align = "rp{1.2cm}p{1.2cm}p{1.2cm}p{1.2cm}p{1.2cm}"))
+@
+
+\begin{center}
+\begin{figure}[h!]
+\includegraphics{Annotation1Perc}
+\caption{Annotation plot: a barplot of the percentage of identification in each selected category and for each selected file, on a log scale}
+\end{figure}
+\label{fig:Annotation1Perc}
+\end{center}
+
+\subsection{Compare annotation to a given reference}
+
+One can choose to compare the percentages of annotation in various subsets to a selected reference, to check whether there is an association between the presence in a particular gene ontology category and presence in the particular subset 
+(e.g. are there more carbohydrate metabolism proteins in the subset X than expected by chance considering the whole population?) .  This is done by means of applying Fisher's exact test for each gene ontology category and for each subset as compared to the selected reference.  The test returns a p-value, which is only recorded if the counts for the respective category are not too small (n > 5).
+
+
+<<results=tex,eval=TRUE, echo=TRUE>>=
+res <- compareAnnot(res.list, "Control")
+print(xtable(res))
+@
+
+
+Given the large number of tests, and the fact that multiple testing corrections are not 
+applied, such a table should be regarded as a suggestion for selecting further 
+categories and protein subsets for further consideration.  
+In the example at hand for instance, there is a clear indication that there are more 
+signalling proteins in the ``00100" subset (Protein present at extreme stress conditions only) than expected by chance.
+
+\subsection{Add abundance data}
+We now consider the protein abundance data.  We process the annotation again, this time indicating that we have an abundance datafile. Note that the abundance file has two descriptive columns (a protein ID and a protein description), so we indicate that by setting the datafile.ignore.cols.  
+<<withAbundance,eval=TRUE, echo=TRUE>>=
+res.list <- processAnnotation(file.names, GOIDlist, data.file.name = datafile, 
+	printFiles = TRUE, datafile.ignore.cols = 2)
+@
+
+
+If the printFiles parameter is set to TRUE, a tab separated annotation file will be 
+printed in the current directory for each of the GO files processed.  
+The format can be changed to a CSV matrix containing identifiers as rows and GO 
+categories as columns.  You can inspect for instance the ``Annot 11111.csv" and 
+``Annot 11111.txt" to see the different formats.  
+The matrix one might be preferred if one wishes to see combinations of GO identifiers ("Which of my ID's were involved in both transport and signaling?"). 
+
+<<withAbundance,eval=TRUE, echo=TRUE>>=
+writeAnnotation(res.list, datafile = datafile, format = "matrix")
+@
+
+After processing the abundance files, some graphs can be generated by abundancePlot 
+and are included below.  One levelplot for each file will be generated.  
+
+<<annotationPlot,eval=TRUE, echo=TRUE>>=
+tp <- abundancePlot(res.list)
+@
+
+\begin{center}
+\begin{figure}
+\caption{Abundance levelplot for File 1, showing the total abundance for each GO category in each file. One such image is generated for each file under consideration. }
+\includegraphics{File1.png}
+\end{figure}
+\end{center}
+
+\clearpage
+
+
+\section{KEGG pathway analysis}
+In this section, we will describe the steps involved in KEGG pathway analysis using PloGO2, 
+which is a major extension of our 
+PloGO R package\cite{pascovici2012plogo}. We will use a public dataset in \cite{YunqiWu2016}
+as an example to help go through the steps of the PloGO2 pathway analysis.
+ 
+\subsection{Prepare the pathway DB file}
+Unlike the publicly available GO annotation databases, KEGG pathway database requires paid subscription
+for using their APIs. As such, PloGO2 does not provide functions of accessing KEGG pathway annotations on the fly, hence
+the pathway annotations for all proteins of interest have to be pre-downloaded.
+Besides using subscribed APIs, there are a number of ways for downloading KEGG pathway annotations such as using the KEGG
+website or a third-party tool such as DAVID.
+ 
+The downloaded pathway annotations need to be saved in a simple two-column CSV file format which
+is the same as the GO annotation described in \ref{sec:gofiles}. 
+Each row has one protein ID and one or more pathway IDs separated by space. 
+An example of the pathway DB file is as below. 
+<<results=tex>>=
+path <- system.file("files", package = "PloGO2")
+filedb <- file.path(path, "pathwayDB.csv")
+print(xtable(read.csv(filedb)[1:5,]))
+@
+
+
+\subsection{Generate pathway annotation files}
+
+Similar to the GO analysis, the starting point of a pathway analysis is also a collection of identifiers with all their available KEGG 
+pathway IDs in a Wego\cite{WEGO} file format. Function genAnnotationFiles will take a multi-tabbed Excel 
+file with some protein IDs as input and generate an annotation .txt file for each tab. 
+
+The 531 differentially expressed proteins from \cite{YunqiWu2016} were clustered into 7 clusters using
+WGCNA (please refer to PloGO2WithWGCNA vignette for details). Results were saved in an Excel file with each tab containing proteins from one cluster.
+The KEGG pathway annotations for all proteins were downloaded and formatted in a pathway DB file. Use the following 
+commands to generate the annotation files for all clusters. Parameter colName is used to
+specify the name of the column that contains the protein IDs, by default, it is ``Uniprot".
+DB.name specifies the pathway DB file name and parameter folder specifies the folder that
+the generated annotation files will be stored. 
+
+\vspace{5mm}
+<<genAnnotFile>>=
+path <- system.file("files", package = "PloGO2")
+genAnnotationFiles(fExcelName = file.path(path, "ResultsWGCNA_Input4PloGO2.xlsx"),  
+				colName="Uniprot", 
+				DB.name = file.path(path, "pathwayDB.csv"),
+				folder="PWFiles")					
+@
+
+The generated pathway annotation file is in the same file format as the GO annotation file.
+Below is an example. 
+<<results=tex>>=
+print(xtable(read.annot.file(file.path(path, "PWFiles", "red.txt"))[1:5,]))
+@
+
+
+\subsection{Semi-automated pathway analysis}
+
+When the pathway annotation files have been generated, we can proceed to perform the pathway
+analysis. PloGO2 provides two ways of executing a pathway analysis: semi-automated and 
+automated. 
+
+Using the semi-automated approach, the users can control the analysis and inspect the intermediate 
+output from each step. The first step in this mode is to process the list of annotated files generated above.
+
+Similar to the processGoFile, an individual pathway annotation file can be processed using
+function processPathFile and the identifiers belonging to each pathway category will be
+extracted. The following code fragment shows how to process the annotation for the ``Alldata"
+file given a list of pathway categories of interest. 
+<<processPathFile, eval=FALSE>>=
+fname <- paste(dir,"PWFiles/Alldata.txt", sep="/")
+AnnotIDlist <- c("osa01100","osa01110","osa01230","osa00300","osa00860")	
+processPathFile(fname, AnnotIDlist)
+@
+
+If the abundance data file is available, it can be added as the value of the datafile parameter and
+the abundance for each pathway category will be aggregated.
+<<processPathFile, eval=FALSE>>=
+datafile <- paste(dir, "Abundance data.csv", sep="/")
+processPathFile(fname, AnnotIDlist, datafile=datafile)
+@
+
+Again, function processAnnotation can be used to batch processing a list of annotation files. An example is
+as below.
+<<processAnnotation,eval=TRUE>>=
+file.list <- file.path(path,"PWFiles", c("AllData.txt", "red.txt", "yellow.txt") )
+AnnotIDlist <- c("osa01100","osa01110","osa01230","osa00300","osa00860")	
+res.list <- processAnnotation(file.list, AnnotIDlist, data.file.name=datafile)	
+@
+
+If the abundance data file exists, function abundancePlot can be used to generate some plots for each
+annotation file.
+<<abundancePlot,eval=FALSE>>=
+Group <- names(read.csv(datafile))[-1]
+abundance <- abundancePlot(res.list, Group=Group)
+@
+
+If the reference (usually the whole experimental data) is given, function compareAnnot can be used to
+perform the pathway enrichment analysis with Fisher exact test.
+<<results=tex>>=
+reference="AllData"
+comp <- compareAnnot(res.list, reference)
+print(xtable(comp, digits=4))
+@
+
+\subsection{Automated pathway analysis}
+In the automated mode, the process described above can be automatically executed using one wrapper function
+PloPathway. The inputs can be a zip file or file folder, with an optional abundance data file. An example
+is as below. 
+<<plopathway, results=hide>>=
+path <- system.file("files", package = "PloGO2")
+res <- PloPathway( zipFile=paste(path, "PWFiles.zip", sep="/"), 
+	reference="Alldata", 
+	data.file.name = paste(path, "Abundance_data.csv", sep="/"),
+	datafile.ignore.cols = 1)
+@
+
+\subsection{Output summary file and plot}
+A PloGO2 summary file can be printed out as an xlsx file using printSummary.
+<<printSummary>>=
+printSummary(res)
+@
+
+A barplot of the aggregated abundance can also be plotted (\ref{fig:abundanceBarplot}.
+<<abundanceBarplot, results=hide, fig=FALSE>>=
+plotAbundanceBar(res$aggAbundance, res$Counts)
+@
+
+\begin{figure}[h]
+\includegraphics{Abundance barplot.png}
+\caption{Aggregated abundance barplot  for pathways with count >= 5 }
+\label{fig:abundanceBarplot}
+\end{figure}
+
+
+\section{Conclusions}
+The PloGO2 package is a simple functional annotation summarizing and plotting tool.  
+It provides for integration of abundance information 
+where such information is present, and allows easy selection of multiple categories of interest 
+as well as allowing for many files to be analyzed at the same time.  
+
+
+
+\bibliography{REFERENCES}
+
+\end{document}

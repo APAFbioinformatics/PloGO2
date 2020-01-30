@@ -1,0 +1,128 @@
+\documentclass[11pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+\usepackage{times}
+\usepackage{comment}
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+%\headheight=-.3in
+%\VignetteIndexEntry{UsingPloGO}
+%\VignetteDepends{xtable}
+
+\bibliographystyle{plainnat}
+
+\title{Integration of PloGO2 and WGCNA for proteomics}
+\author{J.Wu and D.Pascovici}
+
+\begin{document}
+
+\maketitle
+\begin{abstract}
+This vignette describes a tailored workflow of using WGCNA for protein network analysis. A publicly available protein ratio dataset was used to 
+demonstrate the major workflow steps and its outputs \cite{YunqiWu2016}. It also demonstrates that the WGCNA output can be seamlessly input into PloGO2 and
+further characterised functionally using PloGO2. 
+\end{abstract}
+
+
+\section{WGCNA workflow for proteomics}
+\label{sec_wgcna}
+WGCNA \cite{langfelder2008wgcna} is a popular correlation network functional analysis tool
+which can be used to generate a potentially large number of related data subsets via clustering. 
+The WGCNA was proposed and mostly used for genomic data correlation analysis. 
+We tailored the WGCNA workflow to be more suitable for proteomic data analysis, and include
+this wrapper in the PloGO2 package for completeness.  
+
+Our in-house tailored WGNCA workflow starts from a protein abundance or ratio dataset. 
+It is assumed that the data has been 
+properly normalised. The protein expression will be log-transformed before the analysis starts. 
+Firstly, a soft power was selected for constructing the weighted correlation matrix by using the 
+approximate scale-free network criteria.  A scale free network is one where the topology is dominated 
+by a few highly connected nodes, which link the rest of the less connected nodes to the system; 
+it is assumed that most biologically relevant networks should satisfy this property.  
+By raising the correlation to the selected soft power, the correlation network becomes scale-free.  
+The cut-off of the parameter RsquaredCut was set as 0.85. Signed networks, instead of unsigned for 
+gene network analysis, are constructed using the soft power selected.  
+Then TOM (topology overlap metrics) distance was calculated from the network adjacency. 
+Hierarchical clustering was performed based on the TOM distance. 
+A set of clusters were obtained by using the dynamic tree cutting method with the parameter 
+value of minClusterSize as 20. An automatic cluster merging function was invoked to merge 
+the closely correlated clusters from the dynamic tree cutting.
+
+The script for an example WGNCA workflow can be found in the script folder of this package.
+An example of the input of WGCNA is as follows.
+
+<<wgcnainput, results=tex, eval=TRUE, echo=TRUE>>=
+library(PloGO2)
+library(xtable)
+path <- system.file("files", package = "PloGO2")
+print(xtable(read.csv(file.path(path,"rice.csv"))[1:6,c(1:2,5:7)]))
+@
+
+The included WGNCA workflow can be executed using the following command
+<<wgcnaplots, eval=TRUE, echo=TRUE, fig=FALSE, results=hide>>=
+source(file.path(system.file("script", package = "PloGO2"), "WGCNA_proteomics.R"))
+@
+
+A number of plots will be produced to visualise the overall weighted correlation network, cluster profiles and 
+eigenprotein boxplots. Some examples are as follows.
+
+Fig \ref{fig:clusterdendrogram} shows the cluster dendrogram for the initial and merged clusters.
+
+\begin{figure}[htb!]
+\centering
+\includegraphics{DendroColorMergedClust.png}
+\caption{Cluster dendrogram}
+\label{fig:clusterdendrogram}
+\end{figure}
+
+
+Fig \ref{fig:hubboxplot} shows the boxplots for the top 6 hub proteins for the red cluster.
+
+\begin{figure}[htb!]
+\centering
+\includegraphics[height=9cm, width=9cm]{Boxplot hub proteins - red.png}
+\caption{Boxplot for hub proteins - red}
+\label{fig:hubboxplot}
+\end{figure}
+
+
+Fig \ref{fig:clusterprofile} shows the cluster profile for all clusters.
+
+\begin{figure}[htb!]
+\centering
+\includegraphics[height=9cm, width=9cm]{WGCNAClusterPattenME.png}
+\caption{Cluster profile}
+\label{fig:clusterprofile}
+\end{figure}
+
+
+The output of the WGCNA analysis can be summarised in a multi-tab Excel file which include
+the overall data and proteins in every cluster ordered by their kME (fuzzy module membership) values.
+Hub proteins will be easily identified The proteins with the highest kMEs can be viewed as the hub proteins of that cluster. 
+Therefore, the hub proteins are those on the top of the list. An example of the result for one cluster, "red",
+is as follows.
+
+<<wgcnaoutput, results=tex, eval=TRUE, echo=TRUE>>=
+print(xtable(readWorkbook("ResultsWGCNA.xlsx", "red")[1:6,c(1:2,5:7,23:24)]))
+@
+
+\section{Using input from WGCNA workflow}
+The output of the WGCNA can be directly fed into PloGO2 to perform the KEGG pathway analysis, with
+pre-processed KEGG pathway DB and optional abundance file (refer to the PloGO2 vignette for details).
+
+<<wgcna2plogo2, eval=TRUE, echo=TRUE>>=
+genAnnotationFiles("ResultsWGCNA.xlsx", DB.name = file.path(path, "pathwayDB.csv"))
+res <- PloPathway(reference="Alldata", filesPath="PWFiles",
+	data.file.name = file.path(path, "Abundance_data.csv"),
+	datafile.ignore.cols = 1)
+@
+
+
+\bibliography{REFERENCES}
+
+\end{document}
