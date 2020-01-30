@@ -11,7 +11,7 @@
 \oddsidemargin=.1in
 \evensidemargin=.1in
 %\headheight=-.3in
-%\VignetteIndexEntry{UsingPloGO}
+%\VignetteIndexEntry{UsingPloGO2}
 %\VignetteDepends{xtable}
 
 \bibliographystyle{plainnat}
@@ -176,7 +176,7 @@ processGoFile("F1.txt", GOIDlist)
 The bulk of processing a set of annotation files is done by the processAnnotation file, which can print annotation listings for each file, and merge with abundance information if any is available.
 
 <<processFiles,eval=TRUE, echo=TRUE>>=
-res.list <- processAnnotation(file.names, GOIDlist, printFiles = TRUE)
+res.list <- processAnnotation(file.names, GOIDlist, printFiles = FALSE)
 @
 
 After processing the files, the annotationPlot function produces some visual summaries and generates the counts and percentages.
@@ -221,7 +221,7 @@ signalling proteins in the ``00100" subset (Protein present at extreme stress co
 We now consider the protein abundance data.  We process the annotation again, this time indicating that we have an abundance datafile. Note that the abundance file has two descriptive columns (a protein ID and a protein description), so we indicate that by setting the datafile.ignore.cols.  
 <<withAbundance,eval=TRUE, echo=TRUE>>=
 res.list <- processAnnotation(file.names, GOIDlist, data.file.name = datafile, 
-	printFiles = TRUE, datafile.ignore.cols = 2)
+	printFiles = FALSE, datafile.ignore.cols = 2)
 @
 
 

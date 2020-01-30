@@ -11,7 +11,7 @@
 \oddsidemargin=.1in
 \evensidemargin=.1in
 %\headheight=-.3in
-%\VignetteIndexEntry{UsingPloGO}
+%\VignetteIndexEntry{UsingPloGO2WithWGCNA}
 %\VignetteDepends{xtable}
 
 \bibliographystyle{plainnat}
