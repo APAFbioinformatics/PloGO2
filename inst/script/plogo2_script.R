@@ -9,7 +9,17 @@
 
 library(PloGO2)
 
+########################################
+# ExcelToPloPathway for the main dataset
+ ########################################
  
+path <- system.file("files", package = "PloGO2")
+
+res <- ExcelToPloPathway(file.path(path,"ResultsWGCNA_Input4PloGO2.xlsx"), 
+	colName="Uniprot", compareWithReference="AllData", DB.name=file.path(path,"pathwayDB.csv"),
+	data.file.name = file.path(path,"Abundance_data.csv") )
+
+
 
 #############
 # Paper plots	

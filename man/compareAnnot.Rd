@@ -9,7 +9,7 @@ A reference must be selected, and that name must be amongst the
 annotation result list names.
 }
 \usage{
-compareAnnot(res.list, referenceName, removeZeros = FALSE, correction = FALSE)
+compareAnnot(res.list, referenceName, removeZeros = FALSE, correction = TRUE)
 }
 \arguments{
   \item{res.list}{
@@ -63,7 +63,7 @@ res.list <- processAnnotation(file.names, GOIDlist)
 # compare with Control
 compareAnnot(res.list, "Control")
 
-compareAnnot(res.list, "Control", correction=TRUE)
+compareAnnot(res.list, "Control", correction=FALSE)
 }
 
 }

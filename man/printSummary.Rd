@@ -7,11 +7,14 @@ Function to print the summary file of PloGO2 results.
 Each tab in the summary spreadsheet of the  
 }
 \usage{
-	printSummary(results) 
+	printSummary(results, file="PloGO2Results.xlsx") 
 }
 \arguments{
   \item{results}{
 	A list of results from PloGO2 analysis 
+} 
+\item{file}{
+	The output file name
 } 
 
 }

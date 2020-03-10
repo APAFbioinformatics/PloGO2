@@ -1,5 +1,5 @@
 compareAnnot <- function(res.list, referenceName, removeZeros = FALSE,
-	correction = FALSE)
+	correction = TRUE)
 {
 	file.list <- unlist(lapply(res.list, FUN = function(x) { x$fname }))
 	reference <- grep(tolower(referenceName), tolower(file.list))

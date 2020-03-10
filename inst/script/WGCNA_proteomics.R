@@ -249,8 +249,8 @@ plotClusterProfileWGCNA(t(datExpr), WGCNAClusterID, Group,
 
 
 # dendrogram and heatmap for eigenproteins
-png("Dendrogram eigenproteins.png", 500,500,res=100)					
-plotEigengeneNetworks(MEs, "Eigenprotein Network", marHeatmap = c(3,4,2,2), marDendro = c(0,4,2,0),
+png("Dendrogram eigenproteins.png", 2000,2000,res=300)					
+plotEigengeneNetworks(MEs, "Eigenprotein Network", marHeatmap = c(3,4,2,2), marDendro = c(3,4,2,5),
 	plotDendrograms = TRUE, xLabelsAngle = 90,heatmapColors=blueWhiteRed(50))	
 dev.off()
 

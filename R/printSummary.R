@@ -1,7 +1,7 @@
 
 # New function - print summary and enrichment results
 
-printSummary <- function(results) {
+printSummary <- function(results, file="PloGO2Results.xlsx") {
   Counts = results$Counts
   colnames(Counts) = paste("Counts", colnames(Counts))
   Percentages = results$Percentages
@@ -75,6 +75,6 @@ printSummary <- function(results) {
   printSimpleOpenxlsxStyle(res.summary, "Summary", wb = wb)
   
   
-  openxlsx::saveWorkbook(wb, file="PloGO2Results.xlsx",  overwrite=TRUE)
+  openxlsx::saveWorkbook(wb, file=file,  overwrite=TRUE)
   
 }
