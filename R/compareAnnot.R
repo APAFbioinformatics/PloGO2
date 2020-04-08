@@ -8,7 +8,7 @@ compareAnnot <- function(res.list, referenceName, removeZeros = FALSE,
 		Counts <- sapply(res.list, FUN = function(v) { v$counts[, 1] })
 		Protein.counts <- sapply(res.list, FUN = function(v) { v$N })
 
-		rest <- setdiff(1:ncol(Counts), reference)
+		rest <- setdiff(seq_len(ncol(Counts)), reference)
 		z.idx <- rep(FALSE, nrow(Counts))
 
 		if (removeZeros) {
@@ -20,7 +20,7 @@ compareAnnot <- function(res.list, referenceName, removeZeros = FALSE,
 		p.val <- matrix(NA, nrow(Counts), ncol(Counts))
 
 		# each category
-		for (i in 1:nrow(Counts)) {
+		for (i in seq_len(nrow(Counts))) {
 			for (j in rest) {
 				mat <- matrix(c(Counts[i, j],
 						Counts[i, reference],
@@ -52,7 +52,7 @@ compareAnnot <- function(res.list, referenceName, removeZeros = FALSE,
 		colnames(p.val) <- basename(file.list)
 
 		if (correction) {
-			for (i in 1:ncol(p.val))
+			for (i in seq_len(ncol(p.val)))
 				p.val[, i] <- p.adjust(p.val[, i], method = "fdr")
 		}
 	} else {

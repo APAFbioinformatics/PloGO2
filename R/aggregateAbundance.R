@@ -7,7 +7,7 @@ ag.list <- list()
 
 if ( (length(res.list) > 0) & (!is.null(res.list[[1]]$abundance)) ) {
 
-if (nrow(res.list[[1]]$abundance) != length(Group) ) Error("The Group length does not match the number of data columns of the annotation matrix");
+if (nrow(res.list[[1]]$abundance) != length(Group) ) stop("The Group length does not match the number of data columns of the annotation matrix");
  
 
 

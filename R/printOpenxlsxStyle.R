@@ -1,7 +1,7 @@
 printOpenxlsxStyle  <- function (dat, ratios, pvals, wb, tabName = "results", hiCutoff = 1.5, lowCutoff=0.67, pvalCutoff=0.05) 
 {
 
-	addWorksheet(wb, sheet=tabName)
+	addWorksheet(wb, sheetName=tabName)
 	
 	upReg <- createStyle(fgFill = "violet")
 	downReg <- createStyle(fgFill = "forestgreen")

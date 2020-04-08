@@ -12,7 +12,7 @@ of its children in the GO graph.
 }
 \usage{
 processAnnotation(file.list, AnnotIDlist, data.file.name = NULL, printFiles = FALSE,
-	format = "compact", datafile.ignore.cols = 1, aggregateFun="sum")
+	format = c("compact","long"), datafile.ignore.cols = 1, aggregateFun="sum")
 }	
 \arguments{
   \item{file.list}{

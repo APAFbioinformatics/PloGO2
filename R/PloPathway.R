@@ -13,8 +13,11 @@ options(stringsAsFactors = FALSE)
 results <- list()
 
 if ( !(zipFile %in% c("", "none") ) ) {
-	if ( !( "./PWFiles" %in% list.files()) ) dir.create("PWFiles")
-	files <- unzip(zipFile, exdir="PWFiles")
+  # unzip to tempdir
+	#if ( !( "./PWFiles" %in% list.files()) ) dir.create("PWFiles")
+	#files <- unzip(zipFile, exdir="PWFiles")
+  files <- unzip(zipFile, exdir=tempdir())
+  
 	cat(files)
 } else {
 	files <- list.files(filesPath)
@@ -62,27 +65,12 @@ res.list <- processAnnotation(file.list, AnnotIDlist, data.file.name,
 annot.res <- annotationPlot(res.list, plot=TRUE, trimzero=TRUE, type="pathway")
 results$Counts <- annot.res$counts
 results$Percentages <- annot.res$percentages
-
-if(FALSE) {	
-counts <- sapply(res.list, FUN = function(v) v$counts[, 1])
-N <- sapply(res.list, FUN = function(v) v$N)
-fnames <- sapply(res.list, FUN = function(v) v$fname)
-colnames(counts) <- fnames
-percentages <- 100 * sweep(counts, 2, N, FUN = "/")
-pathTerms <- res.list[[1]]$counts[,2]
-rownames(counts) <- pathTerms
-rownames(percentages) <- pathTerms
-
-
-results$Counts <- counts
-results$Percentages <- percentages
-}
 Group <- NULL
 
 if (DATA) {
 
 	
-	gp <- names(read.csv(data.file.name))[-c(1:datafile.ignore.cols)]
+	gp <- names(read.csv(data.file.name))[-seq_len(datafile.ignore.cols)]
 	
 
 	#gp <- inferGroup(gp)
@@ -92,8 +80,13 @@ if (DATA) {
 		Group <- gp;
 		results$inferredGroup <- Group
 	}
-	abundance <- abundancePlot(res.list, Group=Group, log=logAb, Plot=TRUE);
-	results$Abundance <- abundance
+	abundance <- abundancePlot(res.list, Group=Group, log=logAb);
+	results$Abundance <- abundance$abundance
+	results$aggregatedAbundance <- abundance$ag.mat
+	
+	# The levelplots and barcharts
+	results$list.levelplots <- abundance$list.levelplots
+	results$list.barplots <- abundance$list.barplots
 }
 
 
@@ -102,35 +95,12 @@ if (useReference) {
 comp <- compareAnnot(res.list, reference);
 results$FisherPval <- comp
 
-write.csv(comp, file="CompareFisher.csv")
-
-
 }
 
-# aggregated abundance
+results$Group = Group
+results$res.list <- res.list
 
-if (!is.null(Group)) {
-  ag.list <- aggregateAbundance(res.list, Group=Group)
-  fnames <- sapply(res.list, FUN = function(v) {
-    v$fname
-  })
-  ag.mat <- ag.list[[1]]
-  
-  for (jj in 2:length(ag.list)) ag.mat <- rbind(ag.mat, ag.list[[jj]]);
-  
-  Files <- as.factor(rep(fnames, each=nlevels(as.factor(Group))))
-  rownames(ag.mat) <- paste(rownames(ag.mat), Files)
-
-  results$ag.list = ag.list
-  results$aggAbundance = ag.mat
-  results$Group = Group
-  }
-  results$res.list <- res.list
-
-
-
-  results
-
+results
 
 }
 

@@ -9,7 +9,7 @@ If abundance data is present extract and merge.
 }
 \usage{
 processPathFile(fname, AnnotIDlist, datafile=NULL, datafile.ignore.cols=1, 
-	format="compact", aggregateFun="sum")	
+	format=c("compact","long"), aggregateFun="sum")	
 }
 \arguments{
   \item{fname}{

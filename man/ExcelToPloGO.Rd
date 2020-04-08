@@ -7,7 +7,7 @@ Function to add GO annotation to an Excel spread sheet
 Function to add GO annotation to an Excel spread sheet
 }
 \usage{
-ExcelToPloGO(fname, colName = "Uniprot", termFile= NA, compareWithReference="none", data.file.name = "none")
+ExcelToPloGO(fname, colName = "Uniprot", termFile= NA, compareWithReference="none", data.file.name = "none", outFolder = "PloGO2Output")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,11 +26,11 @@ ExcelToPloGO(fname, colName = "Uniprot", termFile= NA, compareWithReference="non
   \item{data.file.name}{
 	Abundance data for PloGO if any
 }
- 
+ \item{outFolder}{
+	The output files folder
 }
-\details{
+}
 
-}
 \value{
 A list object, with the following values:
 \item{Counts}{
@@ -52,34 +52,35 @@ A list object, with the following values:
 	a reference file was provided
 }
 
-
-
 \item{res.list}{
 	The full list result of processAnnotation function
 }
 
+
+
+\item{list.levelplots}{
+	The abundance levelplots if the data.file.name is not "none"
 }
-\references{
+
+\item{list.barplots}{
+	The abundance barcharts if the data.file.name is not "none"
+}
+
 
 }
+
 \author{
 D.Pascovici
 }
-\note{
 
-}
-
-\seealso{
-}
 \examples{
 \dontrun{
 # where sample files are stored
 path <- system.file("files", package = "PloGO2")
 termFile = paste(path, "GODefault.txt", sep="/")
-xlfile <- paste(path, "TestEP.xlsx", sep="/")
+xlfile <- paste(path, "ResultsWGCNA_Input4PloGO2.xlsx", sep="/")
 
-
-ExcelToPloGO(xlfile, termFile=termFile, compareWithReference="Parental vs CisR")
+res <- ExcelToPloGO(xlfile, termFile=termFile, compareWithReference="AllData")
 
 
 }

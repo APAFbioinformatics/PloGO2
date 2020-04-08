@@ -1,10 +1,11 @@
 Package: PloGO2
 Type: Package
 Title:Plot Gene Ontology and KEGG pathway Annotation and Abundance
-Version: 0.99.3
-Description: Functions for plotting gene ontology or KEGG pathway information for multiple data subsets at the same time
+Version: 0.99.4
+Description: Functions for enrichment analysis and plotting gene ontology or KEGG pathway information for multiple data subsets at the same time. It also enables encorporating multiple conditions and abundance data.  
 Author: Dana Pascovici, Jemma Wu
 Maintainer: Jemma Wu <jemma.wu@mq.edu.au>, Dana Pascovici <dana.pascovici@mq.edu.au>
-Depends: R (>= 4.0), GOstats,GO.db,lattice, httr, openxlsx, xtable, 
+Depends: R (>= 4.0), GO.db, GOstats
+Imports: lattice, httr, openxlsx, xtable
 biocViews:  Annotation, Clustering, GO, GeneSetEnrichment, KEGG, MultipleComparison, Pathways, Software, Visualization
 License: GPL-2

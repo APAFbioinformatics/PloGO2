@@ -3,7 +3,8 @@
 ExcelToPloGO <- function(fname,  colName="Uniprot", 
 				termFile=NA,
 				compareWithReference="none",
-				data.file.name = "none"
+				data.file.name = "none",
+				outFolder = "PloGO2Output"
 				)
 
 {
@@ -21,21 +22,28 @@ sheets <- names(openxlsx::loadWorkbook(wb))
 
 data.list = lapply(sheets, FUN=function(s){ openxlsx::readWorkbook(wb, s) } )
 id.list <- lapply(data.list, FUN=function(d){unique(d[,colName])})
+
+# make output folder
+if(!(outFolder %in% list.files())) dir.create(outFolder)
+
 # generate GO files 
-if ( !( "./GOFiles" %in% list.files()) ) dir.create("GOFiles")
+if ( !( "./GOFiles" %in% list.files(outFolder)) ) dir.create(file.path(outFolder,"GOFiles"))
 
 # infer identifier type for Uniprot or Ensembl only!
 IDS <- unique(unlist(id.list))
 database <- "uniprot"
 if ( length(grep("^ensp", tolower(IDS))/max(1,length(IDS)))  > .5 ) database <- "ensembl";
 
-for (ii in 1:length(id.list) ) {
+
+for (ii in seq_along(id.list) ) {
 vvv <- unique(id.list[[ii]])
-genWegoFile(vvv, database=database,fname=paste("GOFiles/", sheets[[ii]], ".txt", sep=""))
+genWegoFile(vvv, database=database,fname=paste(sheets[[ii]], ".txt", sep=""), outFolder = file.path(outFolder,"GOFiles"))
 }
 
-plogo.res <- PloGO( filesPath="GOFiles", termFile=termFile, 
+
+plogo.res <- PloGO(filesPath=file.path(outFolder,"GOFiles"), termFile=termFile, 
 				reference=compareWithReference, data.file.name=data.file.name )
+
 
 # merge counts, percentages and Pvalues
 # add GO category
@@ -71,10 +79,10 @@ annotated.list <- list()
 sheet.ord <- match( names(plogo.res$res.list), paste(sheets, ".txt", sep=""))
 data.list <- data.list[sheet.ord]
 
-for ( iii in 1:length(data.list) ) {
+for ( iii in seq_along(data.list) ) {
 
 dat.res <- data.list[[iii]]
-dat.res$Order <- 1:nrow(dat.res)
+dat.res$Order <- seq_len(nrow(dat.res))
 adj.mat <- tabulateAnnot( plogo.res$res.list[[iii]] )
 dat.res <- merge( dat.res, adj.mat, by.x=colName, by.y=1, all.x=TRUE, sort=FALSE)
 annotated.list[[iii]] <- dat.res[order(dat.res$Order),]
@@ -88,7 +96,7 @@ names(annotated.list) <- sheets[sheet.ord]
 wb <- openxlsx::createWorkbook("Results.xlsx")
 
 
- for (jj in 1:length(annotated.list)) {
+ for (jj in seq_along(annotated.list)) {
   if ("StouffersPval" %in% names(annotated.list[[jj]])) {
                 pvals <- c(grep("Stouffer", names(annotated.list[[jj]])), 
                   grep("\\.pval\\.1..\\.1..$", tolower(colnames(annotated.list[[jj]]))))
@@ -112,8 +120,7 @@ wb <- openxlsx::createWorkbook("Results.xlsx")
 printSimpleOpenxlsxStyle(results, "GOSummary", wb = wb)
 
 
-openxlsx::saveWorkbook(wb, file="Results.xlsx",  overwrite=TRUE)
-
+openxlsx::saveWorkbook(wb, file=file.path(outFolder,"Results.xlsx"),  overwrite=TRUE)
 
 
 

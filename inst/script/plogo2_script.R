@@ -44,8 +44,16 @@ AnnotIDlist <- names(sort(table(allAnnotID), decreasing = TRUE))
 	
 res.list <- processAnnotation(file.names, AnnotIDlist,  data.file.name = datafile)
 
-ab.mat <- abundancePlot(res.list, Group=Group, Plot=TRUE, CountCutOff=2, cex.main=2, cex.lab=1)
+list.levelplots <- 
+	abundancePlot(res.list, Group=Group, CountCutOff=2, cex.main=2, cex.lab=1)$list.levelplots
 
+for(i in seq_along(list.levelplots)) {
+	png(paste("File",i,".png"), 2000, 4000, res=200)
+	print(list.levelplots[[i]])
+	dev.off()
+	}
+	
+	
 
 # Abundance barplot in Figure 4c
 
@@ -89,9 +97,11 @@ idx.countcol = grep("blue|green|red|yellow|turquoise", colnames(res$Counts))
 idx.pathway = grep(paste(rownames(Percentage), collapse="|"), colnames(res$aggAbundance) )
 
 # Abundance barplot	
-plotAbundanceBar(res$aggAbundance[idx.dataset, idx.pathway], 
+png("abundanceBarplot.png", 2500, 2000, res=300)
+par(mar=c(4,10,4,14))
+plot.res <- plotAbundanceBar(res$aggAbundance[idx.dataset, idx.pathway], 
 	res$Counts[idx.pathway, idx.countcol], min.count=0)
-
+dev.off()
 
 
 

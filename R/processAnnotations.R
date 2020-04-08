@@ -1,10 +1,11 @@
 
 
 processAnnotation <- function(file.list, AnnotIDlist, data.file.name = NULL, 
-	printFiles = FALSE, format="compact", datafile.ignore.cols=1,
+	printFiles = FALSE, format=c("compact","long"), datafile.ignore.cols=1,
 	aggregateFun="sum") 
   
   {
+  format <- match.arg(format)
 	annotation.list <- lapply(file.list, FUN = function(fname) {
 	  
 	  if(length(grep("^GO:", AnnotIDlist)) == length(AnnotIDlist)) {

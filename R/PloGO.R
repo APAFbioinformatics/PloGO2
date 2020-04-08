@@ -2,7 +2,7 @@
 PloGO <- function(zipFile = "none", termFile="none", ontology = "BP", 
 		ontologyLevel = 2, reference = "none",
 		data.file.name = "none", datafile.ignore.cols = 1, 
-		filesPath=".", node=NULL, aggregateFun="sum", logAb=FALSE, ...) 
+		filesPath=".", node=NULL, aggregateFun="sum", logAb=FALSE,...) 
 {
 
 
@@ -21,8 +21,9 @@ if (!(termFile %in% c("", "none"))) {
 
 
 if ( !(zipFile %in% c("", "none") ) ) {
-	files <- unzip(zipFile)
-	cat(files)
+  # unzip to tempdir
+	files <- unzip(zipFile, exdir=tempdir())
+	#cat(files)
 } else {
 	files <- list.files(filesPath)
  	files <- paste(filesPath, files, sep="/")
@@ -62,17 +63,22 @@ res.list <- processAnnotation(file.list, GOIDlist, data.file.name,
 annot.res <- annotationPlot(res.list, plot=TRUE, trimzero=TRUE)
 results$Counts <- annot.res$counts
 results$Percentages <- annot.res$percentages
+Group <- NULL
 
 if (DATA) {
-	Group <- NULL
-	gp <- names(read.csv(data.file.name))[-c(1:datafile.ignore.cols)]
+	gp <- names(read.csv(data.file.name))[-seq_len(datafile.ignore.cols)]
 	gp <- inferGroup(gp)
 	if (min(summary(gp)) == max(summary(gp))) {
 		Group <- gp;
 		results$inferredGroup <- Group
 	}
 	abundance <- abundancePlot(res.list, Group=Group, log=logAb);
-	results$Abundance <- abundance
+	results$Abundance <- abundance$abundance
+	results$aggregatedAbundance <- abundance$ag.mat
+	
+	# The levelplots and barcharts
+	results$list.levelplots <- abundance$list.levelplots
+	results$list.barplots <- abundance$list.barplots
 }
 
 
@@ -81,104 +87,13 @@ if (useReference) {
 comp <- compareAnnot(res.list, reference);
 results$FisherPval <- comp
 
-write.csv(comp, file="CompareFisher.csv")
-
-
 }
 
-
-# aggregated abundance
-
-if (!is.null(Group)) {
-  ag.list <- aggregateAbundance(res.list, Group=Group)
-  fnames <- sapply(res.list, FUN = function(v) {
-    v$fname
-  })
-  ag.mat <- ag.list[[1]]
-  
-  for (jj in 2:length(ag.list)) ag.mat <- rbind(ag.mat, ag.list[[jj]]);
-  
-  Files <- as.factor(rep(fnames, each=nlevels(as.factor(Group))))
-  rownames(ag.mat) <- paste(rownames(ag.mat), Files)
-
-  results$ag.list = ag.list
-  results$aggAbundance = ag.mat
-  results$Group = Group
-  }
-  
+results$Group = Group  
 results$res.list <- res.list
 
 results
 
 
 }
-
-
-################
-# Past examples
-################
-
-# PloGO()
-
-# PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOlistDrought.txt",
-#	data.file.name = "Z:/Projects/AnalysesCollection/PloGO/inst/files/NSAFDesc.csv",
-#	datafile.ignore.cols = 2  )
-
-
-# PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOlistDrought.txt",
-#	data.file.name = "Z:/Projects/ExploreData/Steve-Grape/Grape8Conditions/Quality/NSAF.csv",
-#	datafile.ignore.cols = 2, reference="Control"  )
-
-
-
-
-# PloGO(data.file.name = "Z:/Projects/ExploreData/Prasanth/for merging dec11/Analysis IDS/Quality/NSAFDesc.csv",
-#	datafile.ignore.cols = 2, reference="LungAll"  )
-
-
-
-
-
-# PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOlistDrought.txt",
-#	data.file.name = "none", # "Z:/Projects/ExploreData/Iniga/Lorne poster/Quality/NSAF.csv",
-#	datafile.ignore.cols = 1, reference="Control"  )
-
-
-
-
-
-# PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOlistDefense.txt",
-#	data.file.name = "Z:/Projects/ExploreData/Steve-Grape/PloGO grant app/NSAFGrape.csv", 
-#	datafile.ignore.cols = 2, reference="Ctr04"  )
-
-
-
-# PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOlistDefense.txt",
-#	data.file.name = "Z:/Projects/AnalysesCollection/PloGO/inst/files/NSAFDesc.csv", 
-#	datafile.ignore.cols = 2, reference="Control"  )
-
-
-# PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOlistDefense.txt",
-#	data.file.name = "Z:/Projects/AnalysesCollection/PloGO/inst/files/NSAFDesc.csv", 
-#	datafile.ignore.cols = 2, reference="Control", zipFile="fileZip.zip" )
-
-
-# PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOlistDefense.txt",
-#	data.file.name = "Z:/Projects/AnalysesCollection/PloGO/inst/files/NSAFDesc.csv", 
-#	datafile.ignore.cols = 2, reference="Control", zipFile="fileZip.zip" )
-
-
-# res.list <-  PloGO(termFile = "Z:/Projects/AnalysesCollection/Doc/sampleGOList/GOGrapeExp.txt",
-#	data.file.name = "Z:/Projects/ExploreData/Iniga/Lorne poster/Quality/NSAF.csv", 
-#	datafile.ignore.cols = 2, reference="Control")
-
-
-# PloGO(data.file.name = "Z:/Projects/ExploreData/Iniga/Lorne poster/Quality/NSAF.csv",
-#	ontology="MF", ontologyLevel=3, 
-#	datafile.ignore.cols = 2, reference="Control")
-
-
-
-# PloGO( zipFile="fileZip.zip", reference="Control" )
-
 

@@ -35,16 +35,17 @@ plotAbundance <- function(res.list, log=FALSE, eps = 0.001) {
     FF <- rep(gsub(".*\\/", "", colnames(abundance)), each = nrow(abundance))    
 
 
-    png("AbundanceByCategory.png", 2000, 2000, res = 300)
-    print(barchart(Value ~ GG, groups = FF, scales = list(x = list(rot = 45)),
+    #png("AbundanceByCategory.png", 2000, 2000, res = 300)
+    plot.category <- print(barchart(Value ~ GG, groups = FF, scales = list(x = list(rot = 45)),
         auto.key = list(points = FALSE, rectangles = TRUE, space = "top"),
         main = "Abundance by category"))
-    dev.off()
+    #dev.off()
 
-	png("AbundanceByFile.png", 2000, 2000, res = 300)
-    print(barchart(Value ~ FF, groups = GG, scales = list(x = list(rot = 45)),
+	#png("AbundanceByFile.png", 2000, 2000, res = 300)
+    plot.file <- print(barchart(Value ~ FF, groups = GG, scales = list(x = list(rot = 45)),
         auto.key = list(points = FALSE, rectangles = TRUE, space = "top"),
         main = "Abundance by file"))
-    dev.off()
+    #dev.off()
     
+    list(plot.category, plot.file)
 }

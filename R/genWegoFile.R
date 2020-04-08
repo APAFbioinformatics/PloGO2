@@ -1,5 +1,5 @@
 
-genWegoFile <- function (IDList, fname = "Wego.txt", database="uniprot") 
+genWegoFile <- function (IDList, fname = "Wego.txt", database="uniprot", outFolder=tempdir()) 
 {
 
 
@@ -30,12 +30,12 @@ from = seq(1,length(Uniprot), 250)
 to = c(from[-1], 1+length(Uniprot)) -1
 
 unip.list = list()
-for (jj in c(1:length(from))) {
+for (jj in seq_along(from)) {
    # unip.list[[jj]] = try( getUniprotBatch(values=Uniprot[from[jj]:to[jj]], attributes=c("id", "protein+names", "go")) )
    unip.list[[jj]] = try( getUniprotBatch(values=Uniprot[from[jj]:to[jj]], attributes=c("id", "go-id")) )
 } 
 
-for (jj in 1:length(from)) {
+for (jj in seq_along(from)) {
 if (jj == 1) { annotated = unip.list[[1]] } else { annotated = rbind(annotated, unip.list[[jj]]) } ;
 }
 
@@ -59,10 +59,11 @@ bm.res <- aggregate(bm[, 2], by = list(Acc = bm[, 1]), FUN = function(v){paste(v
         2]
     res <- data.frame(IDList, GOID)
     names(res) <- c("Identifier", "ID")
-    write.table(res, file = fname, sep = "\t", quote = FALSE, 
+    
+    write.table(res, file = file.path(outFolder,fname), sep = "\t", quote = FALSE,
         row.names = FALSE, col.names = FALSE)
-		
-		
+
+    file.path(outFolder,fname)
 }
 
 

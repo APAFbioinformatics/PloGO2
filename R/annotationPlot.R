@@ -30,8 +30,8 @@ annotationPlot <- function (res.list, percentages = FALSE, plot = TRUE, trimzero
 		Percentages.print <- Percentages.print[!z.idx, ]
 	}
 
-    write.csv(counts.print, file = "Counts.csv")
-    write.csv(Percentages.print, file = "Percentages.csv")
+    #write.csv(counts.print, file = "Counts.csv")
+    #write.csv(Percentages.print, file = "Percentages.csv")
     rownames(counts) <- GOIDlist
     rownames(Percentages) <- GOIDlist
     AnnotNumbers <- as.vector(counts)
@@ -40,24 +40,6 @@ annotationPlot <- function (res.list, percentages = FALSE, plot = TRUE, trimzero
     GOTerm <- rep(goTerms, ncol(counts))
     Files <- rep(fnames, each = nrow(counts))
     df <- data.frame(AnnotNumbers, AnnotPercentages, GOID, GOTerm, Files)
-
-# can only plot for small numbers of files and categories
-# otherwise only generate tables
-
-	if (plot && (length(unique(GOTerm)) < 16) && (length(res.list) < 6) ) {
-
-		pdf("Annotation1.pdf")
-		print(barchart(log(AnnotNumbers + 0.5) ~ GOTerm, groups = Files,
-			scales = list(x = list(rot = 45)), auto.key = list(points = FALSE,
-			rectangles = TRUE, space = "top")))
-		dev.off()
-
-		pdf("Annotation1Perc.pdf")
-		print(barchart(log(AnnotPercentages + 0.5) ~ GOTerm, groups = Files,
-			scales = list(x = list(rot = 45)), auto.key = list(points = FALSE,
-			rectangles = TRUE, space = "top")))
-		dev.off()
-	}
 
     list(counts = counts.print, percentages = Percentages.print)
 }

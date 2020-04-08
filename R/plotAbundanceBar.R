@@ -14,11 +14,10 @@ obj = Objects[keep.idx]
 mat.abundance = mat.abundance[, (tolower(colnames(mat.abundance)) %in% tolower(obj)), drop=FALSE]
 N = ncol(mat.abundance)
 
-png("Abundance barplot.png", 2500, 2000, res=300)
-par(mar=c(4,10,4,14))
-
-barplot(as.matrix(t(mat.abundance)), las=2, col=rainbow(N), horiz=TRUE, cex.names=.6)
+par(mar=c(1,1,1,1))
+bar.abundance <- barplot(as.matrix(t(mat.abundance)), las=2, col=rainbow(N), horiz=TRUE, cex.names=.6)
 legend("right", fill=rainbow(N), legend=colnames(mat.abundance), cex=0.6,xpd=TRUE, inset=-.1)
 
-dev.off()
+bar.abundance
+
 }

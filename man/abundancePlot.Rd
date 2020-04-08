@@ -42,12 +42,27 @@ abundancePlot(res.list, log = FALSE, printLimit = 16, Group=NULL, Plot=FALSE,
 %\details{
 %}
 \value{
- None returned, generate several images in the local folder.
+A list object, with the following values:
+\item{abundance}{
+	The abundance matrix
+}
+\item{ag.mat}{
+	The aggregated abundance matrix
+}
+\item{list.levelplots}{
+	A list of abundance levelplots trellis object
+}
+
+\item{list.barplots}{
+	A list of abundance barcharts trellis object
+}
+ 
+
 }
 %\references{
 %}
 \author{
-D.Pascovici
+D.Pascovici and J.Wu
 }
 %\note{
 %}
@@ -57,7 +72,6 @@ D.Pascovici
 See Also as \code{\link{processAnnotation}}
 }
 \examples{
-\dontrun{
 
 # get list of ID's
 GOIDlist <- GOTermList("MF", 2)
@@ -68,15 +82,19 @@ file.names <- paste(path, c("00100.txt", "01111.txt", "10000.txt",
 			"11111.txt","Control.txt"), sep="/")
 datafile <- file.path(path, "NSAF.csv")
 
-
 # summarize annotation
 res.list <- processAnnotation(file.names, GOIDlist, data.file.name = datafile)
 
-ab.mat <- abundancePlot(res.list)
+abundance.res <- abundancePlot(res.list)
 
-# abundance plot
-image(ab.mat)
-}
+# Plot levelplots
+list.levelplots <- abundance.res$list.levelplots
+
+for(i in seq_along(list.levelplots)) {
+	png(paste(names(list.levelplots)[i], ".png"), 2000, 4000, res=200)
+	print(list.levelplots[[i]])
+	dev.off()
+}	
 
 
 # KEGG pathway
@@ -90,7 +108,25 @@ AnnotIDlist <- c("osa01100","osa01110","osa01230","osa00300","osa00860")
 		
 res.list <- processAnnotation(file.names, AnnotIDlist,  data.file.name = datafile)
 
-ab.mat <- abundancePlot(res.list, Group=Group)
+abundance.res <- abundancePlot(res.list, Group=Group, Plot=TRUE)
+
+# Plot levelplots
+list.levelplots <- abundance.res$list.levelplots
+
+for(i in seq_along(list.levelplots)) {
+	png(paste(names(list.levelplots)[i], ".png"), 2000, 4000, res=200)
+	print(list.levelplots[[i]])
+	dev.off()
+}	
+# Plot barchats by categories
+list.barplots <- abundance.res$list.barplots
+
+for(i in seq_along(list.barplots)) {
+	png(paste(names(list.barplots)[i], ".png"), 2000, 2000, res=200)
+	print(list.barplots[[i]])
+	dev.off()
+	
+}
 
 
 }

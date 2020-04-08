@@ -37,16 +37,21 @@ J.Wu
 
 
 \examples{
-\dontrun{
+
 path <- system.file("files", package = "PloGO2")
 # run PloPathway with list of id's, data file and reference
 res <- PloPathway( zipFile=paste(path, "PWFiles.zip", sep="/"), 
 	reference="Alldata", 
 	data.file.name = paste(path, "Abundance_data.csv", sep="/"),
 	datafile.ignore.cols = 1)
+	
+png("AbundanceBarplot.png", 2500, 2000, res=300)
+par(mar=c(4,10,4,14))
 
-plotAbundanceBar(res$aggAbundance, res$Counts)
-}
+plot.res <- plotAbundanceBar(res$aggregatedAbundance, res$Counts)
+
+dev.off()
+
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -1,9 +1,9 @@
 
 # use Uniprot web site and RCurl
-getUniprotBatch = function(filters="accession", values=IDList, attributes=c("id", "protein+names", "go-id")) {
+getUniprotBatch = function(filters="accession", values=IDList, attributes=c("id", "protein+names", "go-id"), hostname="https://www.uniprot.org/uniprot/?query=") {
 
 
-query = paste("https://www.uniprot.org/uniprot/?query=", 
+query = paste(hostname, 
 		paste(paste(filters, ":",values, sep=""), collapse="+OR+"), 
 		"&columns=", paste(attributes, collapse=","), "&format=tab", sep="")
 # res = try(getURI(query, ssl.verifypeer = FALSE))  # uses RCurl

@@ -1,5 +1,6 @@
-read.annot.file <- function(fname, format="compact") {
+read.annot.file <- function(fname, format=c("compact","long") ) {
 
+    format <- match.arg(format)
 ###############################
 # accept space or ; separators
 ###############################

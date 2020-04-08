@@ -1,9 +1,27 @@
-exportPattern("^[[:alpha:]]+")
 importFrom(GO.db,GOTERM)
 importFrom(GOstats,GOGraph)
 importFrom(lattice,barchart)
 importFrom(lattice,levelplot)
 import(openxlsx)
+import(xtable)
 importFrom(httr,GET)
 importFrom(httr,content)
+export(abundancePlot,
+ annotationPlot,
+ compareAnnot,
+ ExcelToPloGO,
+ ExcelToPloPathway,
+ genAnnotationFiles,
+ genWegoFile,
+ getGoID,
+ GOTermList,
+ PloGO,
+ PloPathway,
+ plotAbundanceBar,
+ printSummary,
+ processAnnotation,
+ processGoFile,
+ processPathFile,
+ read.annot.file,
+ writeAnnotation)
 

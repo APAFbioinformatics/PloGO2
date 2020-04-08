@@ -7,7 +7,7 @@ Function to read an annotation file.
 Accepts GO id's separated by space or semicolon
 }
 \usage{
-read.annot.file(fname, format = "compact")
+read.annot.file(fname, format = c("compact","long"))
 }
 \arguments{
   \item{fname}{

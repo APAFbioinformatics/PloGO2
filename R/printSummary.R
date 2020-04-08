@@ -29,11 +29,11 @@ printSummary <- function(results, file="PloGO2Results.xlsx") {
   data.list <- results$list.prot.ids
   
   
-  for ( iii in 1:length(data.list) ) {
+  for ( iii in seq_along(data.list) ) {
     
     prot.id <- data.list[[iii]]
 
-    dat.res <- data.frame(Protein=prot.id, Order=1:length(prot.id))
+    dat.res <- data.frame(Protein=prot.id, Order=seq_along(prot.id))
 
     
     # JW
@@ -51,7 +51,7 @@ printSummary <- function(results, file="PloGO2Results.xlsx") {
   wb <- openxlsx::createWorkbook("Results.xlsx")
   
   
-  for (jj in 1:length(annotated.list)) {
+  for (jj in seq_along(annotated.list)) {
     if ("StouffersPval" %in% names(annotated.list[[jj]])) {
       pvals <- c(grep("Stouffer", names(annotated.list[[jj]])), 
                  grep("\\.pval\\.1..\\.1..$", tolower(colnames(annotated.list[[jj]]))))

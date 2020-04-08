@@ -8,7 +8,7 @@ Prints available GO or pathway annotation and abundance (if existing) in
 a long format or an adjacency matrix type format.
 }
 \usage{
-writeAnnotation(res.list, datafile = NULL, datafile.ignore.cols = 1, format = "list")
+writeAnnotation(res.list, datafile = NULL, datafile.ignore.cols = 1, format = c("list","matrix"),outFolder=tempdir())
 }
 \arguments{
   \item{res.list}{
@@ -23,6 +23,9 @@ writeAnnotation(res.list, datafile = NULL, datafile.ignore.cols = 1, format = "l
   \item{format}{
   	Either \code{"matrix"} or \code{"list"}.
 }
+ \item{outFolder}{
+	The output files folder
+}
 }
 \details{
 The GO/pathway information and abundance will be printed to files.  If the format
@@ -32,7 +35,7 @@ If the format is \code{"matrix"}, then the data will be printed in matrix format
 identifiers (rows) by GO categories (columns), with the abundance data appended.
 }
 \value{
- None returned
+ The path of the annotation folder.
 }
 %\references{
 %}

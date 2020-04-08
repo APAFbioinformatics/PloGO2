@@ -9,7 +9,7 @@ that are annotated at either the category or its GO children.
 If abundance data is present extract and merge.
 }
 \usage{
-processGoFile(fname, GOIDlist, datafile = NULL, datafile.ignore.cols = 1, format = "compact",aggregateFun="sum")
+processGoFile(fname, GOIDlist, datafile = NULL, datafile.ignore.cols = 1, format = c("compact","long"),aggregateFun="sum")
 }
 \arguments{
   \item{fname}{

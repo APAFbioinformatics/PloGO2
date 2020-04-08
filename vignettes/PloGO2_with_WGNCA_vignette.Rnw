@@ -116,8 +116,8 @@ The output of the WGCNA can be directly fed into PloGO2 to perform the KEGG path
 pre-processed KEGG pathway DB and optional abundance file (refer to the PloGO2 vignette for details).
 
 <<wgcna2plogo2, eval=TRUE, echo=TRUE>>=
-genAnnotationFiles("ResultsWGCNA.xlsx", DB.name = file.path(path, "pathwayDB.csv"))
-res <- PloPathway(reference="AllData", filesPath="PWFiles",
+annot.folder <- genAnnotationFiles("ResultsWGCNA.xlsx", DB.name = file.path(path, "pathwayDB.csv"))
+res <- PloPathway(reference="AllData", filesPath=annot.folder,
 	data.file.name = file.path(path, "Abundance_data.csv"),
 	datafile.ignore.cols = 1)
 @

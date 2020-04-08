@@ -77,26 +77,33 @@ A list object, with the following values:
 	abundance file was provided
 }
 
+\item{aggregatedAbundance}{
+	The aggregated abundance matrix if the data file is provided
+}
+
 \item{FisherPval}{
 	The Fisher p-values matrix summarized for all files, ONLY generated if
 	a reference file was provided
 }
 
-
-
 \item{res.list}{
 	The full list result of processAnnotation function
 }
 
+\item{list.levelplots}{
+	The abundance levelplots if the data.file.name is not "none"
+}
+
+\item{list.barplots}{
+	The abundance barcharts if the data.file.name is not "none"
+}
 
 }
-\references{
-}
+
 \author{
 D. Pascovici
 }
-\note{
-}
+
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
@@ -104,7 +111,6 @@ D. Pascovici
 \code{\link{processAnnotation}}
 }
 \examples{
-\dontrun{
 # where sample files are stored
 path <- system.file("files", package = "PloGO2")
 # run PloGO with list of id's, data file and reference
@@ -113,7 +119,5 @@ res <- PloGO( zipFile=paste(path, "GOfiles.zip", sep="/"),
 	data.file.name = paste(path, "NSAFDesc.csv", sep="/"),
 	datafile.ignore.cols = 2)
 
-
-}
 }
 \keyword{ analysis }

@@ -7,7 +7,7 @@ Function to add KEGG pathway annotation to an Excel spread sheet
 Function to add KEGG pathway annotation to an Excel spread sheet
 }
 \usage{
-ExcelToPloPathway(fname, colName = "Uniprot", compareWithReference = "none", DB.name = "pathwayDB.csv", data.file.name = "none")
+ExcelToPloPathway(fname, colName = "Uniprot", compareWithReference = "none", DB.name = "pathwayDB.csv", data.file.name = "none", outFolder = "PloGO2Output")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,10 +26,11 @@ ExcelToPloPathway(fname, colName = "Uniprot", compareWithReference = "none", DB.
   \item{data.file.name}{
 	Abundance data for PloGO if any
 }
+\item{outFolder}{
+	The output files folder
 }
-\details{
+}
 
-}
 \value{
 A list object, with the following values:
 \item{Counts}{
@@ -55,22 +56,22 @@ A list object, with the following values:
 \item{res.list}{
 	The full list result of processAnnotation function
 }
+
+
+\item{list.levelplots}{
+	The abundance levelplots if the data.file.name is not "none"
 }
-\references{
+
+\item{list.barplots}{
+	The abundance barcharts if the data.file.name is not "none"
+}
+
+
 
 }
-\author{
 
-}
-\note{
-
-}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-
-}
 \examples{
 
 path <- system.file("files", package = "PloGO2")

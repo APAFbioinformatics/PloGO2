@@ -1,8 +1,7 @@
-writeGOannot <- function(res, fname="AnnotOut.txt", datafile = NULL, format="list") {
-
+writeGOannot <- function(res, fname="AnnotOut.txt", datafile = NULL, format=c("list","matrix"),outFolder=tempdir()) {
 
 # two formats: list, or adjacency matrix 
-
+format <- match.arg(format)
 
 ID.list <- res$ID.list
 counts <- as.matrix(res$counts)
@@ -28,7 +27,7 @@ if (format == "matrix") {
         }
 
         adj.mat <- data.frame( descriptions , t(adj.mat))
-        write.csv(t(adj.mat), file = fname, row.names = FALSE)
+        write.csv(t(adj.mat), file = file.path(outFolder,fname), row.names = FALSE)
 
 } else {
 
@@ -41,11 +40,11 @@ ID.list <- lapply(ID.list, FUN=function(v){merge(v, additionalData, by.x=1, by.y
 
 cat("Annotation summary by category \n", file=fname)
 
-for (i in 1:length(ID.list)) {
+for (i in seq_along(ID.list)) {
 	cat(rownames(counts)[i], counts[i,2], "\n", 
 		"Number:", counts[i,1], "\n", sep="\t", 
 		file=fname, append=TRUE)
-	write.table(format(ID.list[[i]], digits=4), sep="\t", file=fname, append=TRUE)
+	write.table(format(ID.list[[i]], digits=4), sep="\t", file=file.path(outFolder,fname), append=TRUE)
 
 }
 
@@ -54,5 +53,3 @@ for (i in 1:length(ID.list)) {
 
 }
 
-
-# writeGOannot(res, datafile=datafile)

@@ -9,7 +9,7 @@ DB file.
 }
 \usage{
 genAnnotationFiles(fExcelName,  colName="Uniprot", 
-				DB.name = "pathwayDB.csv", folder="PWFiles")
+				DB.name = "pathwayDB.csv", folder="PWFiles",outFolder=tempdir())
 }
 \arguments{
   \item{fExcelName}{
@@ -25,13 +25,15 @@ genAnnotationFiles(fExcelName,  colName="Uniprot",
 \item{folder}{
 	The folder name for saving the generated files.
 }
-
+\item{outFolder}{
+	The output files folder
+}
 }
 
 %\details{
 %}
 \value{
-TRUE if at least some annotations were found, FALSE otherwise.
+The folder path for generated annotation files.
 }
 %\references{
 %% ~put references to the literature/web site here ~

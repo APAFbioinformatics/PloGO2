@@ -2,14 +2,14 @@
 countAndAbundance <- function(x, main="Annotation and abundance plot", legend.text=NULL,
 	args.legend = list(x = "topright")) {
 
-if (( ncol(x) %% 2)) Error("The annotation abundance matrix should have an even number of columns");
+if (( ncol(x) %% 2)) stop("The annotation abundance matrix should have an even number of columns");
 
 ord <- order(x[,1], decreasing = TRUE)
 ord <- ord[c(rev(seq(from = 1, to = length(ord), by = 2)), seq(from = 2, to = length(ord), by = 2))]
 
 x <- x[ord,]
 
-annotation <- x[,1:(ncol(x)/2)]
+annotation <- x[,seq_len(ncol(x)/2)]
 abundance <- x[,(1+(ncol(x)/2)):ncol(x)]
 
 if (is.null(legend.text)) { legend.text <- gsub("(.*)\\.(.*)$", "\\1", colnames(annotation)) }

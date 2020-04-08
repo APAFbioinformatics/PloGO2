@@ -1,13 +1,8 @@
 
-# new function to add
-
-
-#library(KEGG.db)
-
 
 processPathFile <- function(fname, AnnotIDlist, datafile=NULL, datafile.ignore.cols=1, 
-	format="compact", aggregateFun="sum") {
-
+	format=c("compact","long"), aggregateFun="sum") {
+format <- match.arg(format)
 termListIdx <- list()
 annot.dat <- read.annot.file(fname, format=format)
 abundance  <- NULL
@@ -45,15 +40,15 @@ if (aggregateFun == "prod") {
 
 
 abundance <- sapply(full.ID.list, FUN=function(v){
-	matAbun = datAbun[match(unlist(v), datAbun[,1], nomatch=0) ,-c(1:datafile.ignore.cols)];
-	for(ii in 1:ncol(matAbun)) matAbun[,ii] = as.numeric(matAbun[,ii]);
+	matAbun = datAbun[match(unlist(v), datAbun[,1], nomatch=0) ,-seq_len(datafile.ignore.cols)];
+	for(ii in seq_len(ncol(matAbun))) matAbun[,ii] = as.numeric(matAbun[,ii]);
 	apply(matAbun,2,FUN=prod)})
 
 } else {
 
 abundance <- sapply(full.ID.list, FUN=function(v){
-	matAbun = datAbun[match(unlist(v), datAbun[,1], nomatch=0) ,-c(1:datafile.ignore.cols)];
-	for(ii in 1:ncol(matAbun)) matAbun[,ii] = as.numeric(matAbun[,ii]);
+	matAbun = datAbun[match(unlist(v), datAbun[,1], nomatch=0) ,-seq_len(datafile.ignore.cols)];
+	for(ii in seq_len(ncol(matAbun))) matAbun[,ii] = as.numeric(matAbun[,ii]);
 	apply(matAbun,2,FUN=sum)})
 
 }

@@ -57,32 +57,38 @@ A list object, with the following values:
 	The GO percentages matrix summarized for all files
 }
 
-
 \item{Abundance}{
 	The GO percentages matrix summarized for all files, ONLY generated if an
 	abundance file was provided
 }
 
+\item{aggregatedAbundance}{
+	The aggregated abundance matrix if the data file is provided
+}
 \item{FisherPval}{
 	The Fisher p-values matrix summarized for all files, ONLY generated if
 	a reference file was provided
 }
 
-
-
 \item{res.list}{
 	The full list result of processAnnotation function
 }
 
+\item{list.levelplots}{
+	The abundance levelplots if the data.file.name is not "none"
+}
+
+\item{list.barplots}{
+	The abundance barcharts if the data.file.name is not "none"
+}
+
 
 }
-\references{
-}
+
 \author{
 J. Wu
 }
-\note{
-}
+
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
@@ -90,7 +96,6 @@ J. Wu
 \code{\link{processAnnotation}}
 }
 \examples{
-\dontrun{
 # where sample files are stored
 path <- system.file("files", package = "PloGO2")
 # run PloPathway with list of id's, data file and reference
@@ -98,6 +103,5 @@ res <- PloPathway( zipFile=paste(path, "PWFiles.zip", sep="/"),
 	reference="Alldata", 
 	data.file.name = paste(path, "Abundance_data.csv", sep="/"),
 	datafile.ignore.cols = 1)
-}
 }
 \keyword{ analysis }

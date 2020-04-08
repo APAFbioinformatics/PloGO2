@@ -1,7 +1,8 @@
 processGoFile <- function(fname, GOIDlist, datafile=NULL, datafile.ignore.cols=1, 
-	format="compact", aggregateFun="sum") {
+	format=c("compact","long"), aggregateFun="sum") {
 
-
+format <- match.arg(format)
+  
 termListIdx <- list()
 annot.dat <- read.annot.file(fname, format=format)
 abundance  <- NULL
@@ -32,11 +33,11 @@ nsaf <- read.csv(datafile)
 
 if (aggregateFun == "prod") {
 
-abundance <- sapply(full.ID.list, FUN=function(v){apply(nsaf[match(unlist(v), nsaf[,1], nomatch=0) ,-c(1:datafile.ignore.cols)],2,FUN=prod)})
+abundance <- sapply(full.ID.list, FUN=function(v){apply(nsaf[match(unlist(v), nsaf[,1], nomatch=0) ,-seq_len(datafile.ignore.cols)],2,FUN=prod)})
 
 } else {
 
-abundance <- sapply(full.ID.list, FUN=function(v){apply(nsaf[match(unlist(v), nsaf[,1], nomatch=0) ,-c(1:datafile.ignore.cols)],2,FUN=sum)})
+abundance <- sapply(full.ID.list, FUN=function(v){apply(nsaf[match(unlist(v), nsaf[,1], nomatch=0) ,-seq_len(datafile.ignore.cols)],2,FUN=sum)})
 
 }
 

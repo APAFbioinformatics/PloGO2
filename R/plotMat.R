@@ -38,10 +38,9 @@ if (length(grep("^GO:", colnames(z))) == length(colnames(z)) ) {
 colnames(z) <- paste(nn, number)
 if (log) z <- log(z)
 if (cor) z <- cor(z);
-plot(levelplot(z, col.regions=cn(100), scales=list(x=list(rot=45, cex=1.1), y=list(cex=1.2)), 
-	xlab="", ylab="", main=main, ...))
 
-TRUE
+levelplot(z, col.regions=cn(100), scales=list(x=list(rot=45, cex=1.1), y=list(cex=1.2)), 
+	xlab="", ylab="", main=main, ...)
 
 }
 

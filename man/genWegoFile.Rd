@@ -8,7 +8,7 @@ Connects to the Uniprot Biomart using functionality from the biomaRt package,
 downloads GO information and organizes it as needed.
 }
 \usage{
-genWegoFile(IDList, fname = "Wego.txt", database = "uniprot")
+genWegoFile(IDList, fname = "Wego.txt", database = "uniprot", outFolder=tempdir())
 }
 \arguments{
   \item{IDList}{
@@ -20,12 +20,15 @@ genWegoFile(IDList, fname = "Wego.txt", database = "uniprot")
 \item{database}{
 	\code{"ensembl"} or \code{"uniprot"}.
 }
+ \item{outFolder}{
+	The output files folder
+}
 }
 
 %\details{
 %}
 \value{
-TRUE if at least some annotations were found, FALSE otherwise.
+File path of generated Wego files
 }
 %\references{
 %% ~put references to the literature/web site here ~
@@ -36,10 +39,6 @@ D. Pascovici
 %\note{
 %}
 
-
-\seealso{
-See also \code{\link[biomaRt]{getBM}}
-}
 \examples{
 v <- c("Q9HWC9","Q9HWD0","Q9I4N8","Q9HW18","Q9HWC9","Q9HWD0")
 
