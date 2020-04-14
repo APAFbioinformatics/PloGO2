@@ -118,7 +118,7 @@ From now on we assume we have several gene ontology files, whether generated wit
 For a realistic example, there are 5 sample gene ontology files included in the package; 
 they are a subset of all those analyzed for the paper by \cite{Mirzaei} and correspond to various presence-absence categories in which the total number of proteins were partitioned.  The same package also contains a protein abundance file which has protein abundance values for each identifier, as well as protein names.
 
-<<genFile,eval=TRUE, echo=TRUE>>=
+<<dataFile,eval=TRUE, echo=TRUE>>=
 file.names <- file.path(path, c("00100.txt", "01111.txt", "10000.txt", 
 	"11111.txt", "Control.txt"))
 datafile <- file.path(path, "NSAFDesc.csv")
@@ -246,7 +246,7 @@ tp <- abundancePlot(res.list)
 \begin{center}
 \begin{figure}
 \caption{Abundance levelplot for File 1, showing the total abundance for each GO category in each file. One such image is generated for each file under consideration. }
-\includegraphics{File1.png}
+\includegraphics[height=18cm]{File1.png}
 \end{figure}
 \end{center}
 
@@ -294,7 +294,8 @@ the generated annotation files will be stored.
 \vspace{5mm}
 <<genAnnotFile>>=
 path <- system.file("files", package = "PloGO2")
-res.annot <- genAnnotationFiles(fExcelName = file.path(path, "ResultsWGCNA_Input4PloGO2.xlsx"),  
+res.annot <- genAnnotationFiles(fExcelName = file.path(path, 
+					"ResultsWGCNA_Input4PloGO2.xlsx"),  
 				colName="Uniprot", 
 				DB.name = file.path(path, "pathwayDB.csv"),
 				folder="PWFiles")					
